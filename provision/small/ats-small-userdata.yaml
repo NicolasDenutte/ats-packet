@@ -1,0 +1,71 @@
+#cloud-config
+packages:
+  - ansible
+  - selinux-policy-targeted
+  - unzip
+  - wget
+write_files:
+  - path: /root/provision.sh
+    owner: "root:root"
+    permissions: "755"
+    content: |
+      #!/bin/bash
+      PLAYBOOK_COMMIT="${ansible_repo_commit}"
+      CONSOLE_PASSWORD="$(echo '${console_pass_b64}' | base64 --decode)"
+      cd /root
+      [ -f ats-deploy.zip ] || wget --quiet --output-document=ats-deploy.zip https://github.com/${ansible_repo_org}/ats-deploy/archive/$${PLAYBOOK_COMMIT}.zip
+      [ -d ats-deploy ] || unzip -qq ats-deploy.zip
+      [ -d ats-deploy ] || mv ats-deploy-$${PLAYBOOK_COMMIT} ats-deploy
+      ansible-playbook \
+        --extra-vars eucaconsole_admin_password="$${CONSOLE_PASSWORD}" \
+        -i inventory.yml ats-deploy/playbook_vpcmido.yml
+  - path: /root/inventory.yml
+    owner: "root:root"
+    permissions: "644"
+    content: |
+      ---
+      # Inventory for AppScale ATS packet install
+      #
+      # ansible-playbook --inventory inventory.yml ats-deploy/playbook_vpcmido.yml
+      #
+      all:
+        hosts:
+          ats:
+            ansible_connection: local
+        vars:
+          eucalyptus_product: ats
+          eucalyptus_yum_baseurl: "{{ eucalyptus_yum_baseurl_master }}"
+          cloud_firewalld_configure: yes
+          cloud_system_dns_dnsdomain: "ats-{{ ansible_default_ipv4.address|replace('.', '-') }}.euca.me"
+          vpcmido_public_ip_range: ${net_public_ip_range}
+          vpcmido_public_ip_cidr: ${net_public_ip_cidr}
+        children:
+          cloud:
+            hosts:
+              ats:
+          console:
+            hosts:
+              ats:
+  - path: /.autorelabel
+    owner: "root:root"
+    permissions: "644"
+    content: ""
+  - path: /etc/selinux/config
+    owner: "root:root"
+    permissions: "644"
+    content: |
+      # This file controls the state of SELinux on the system.
+      # SELINUX= can take one of these three values:
+      #     enforcing - SELinux security policy is enforced.
+      #     permissive - SELinux prints warnings instead of enforcing.
+      #     disabled - No SELinux policy is loaded.
+      SELINUX=permissive
+      # SELINUXTYPE= can take one of three values:
+      #     targeted - Targeted processes are protected,
+      #     minimum - Modification of targeted policy. Only selected processes are protected.
+      #     mls - Multi Level Security protection.
+      SELINUXTYPE=targeted
+runcmd:
+  - setenforce Permissive
+  - yum fs filter languages en_US.utf8:en@ATS
+  - /root/provision.sh >> /root/provision.log

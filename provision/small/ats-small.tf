@@ -2,6 +2,7 @@
 
 variable "auth_token" {
   type        = string
+  default     = null
   description = "The packet authorization token if not in environment"
 }
 

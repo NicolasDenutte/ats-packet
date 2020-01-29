@@ -53,7 +53,7 @@ variable "console_admin_password" {
 }
 
 locals {
-  ansible_repo_commit = "573d0f52459d4e7c5c7bb36dabf51d7977f1b234"
+  ansible_repo_commit = "b51f4d3e3a7e3a503244132d207470bcf3783850"
   ansible_repo_org    = "appscale"
   auth_token      = var.auth_token
   billing_cycle   = var.billing_cycle

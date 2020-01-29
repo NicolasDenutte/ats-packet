@@ -35,6 +35,7 @@ write_files:
         vars:
           eucalyptus_product: ats
           eucalyptus_yum_baseurl: "{{ eucalyptus_yum_baseurl_master }}"
+          eucaconsole_certbot_configure: yes
           cloud_firewalld_configure: yes
           cloud_system_dns_dnsdomain: "ats-{{ ansible_default_ipv4.address|replace('.', '-') }}.euca.me"
           vpcmido_public_ip_range: ${net_public_ip_range}

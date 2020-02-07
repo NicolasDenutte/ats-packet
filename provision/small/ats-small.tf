@@ -55,6 +55,8 @@ variable "console_admin_password" {
 locals {
   ansible_repo_commit = "b51f4d3e3a7e3a503244132d207470bcf3783850"
   ansible_repo_org    = "appscale"
+  postdeploy_repo_commit = "6490e73081066e92567e822b198c8e98d7c1f438"
+  postdeploy_repo_org = "appscale"
   auth_token      = var.auth_token
   billing_cycle   = var.billing_cycle
   console_admin_password = var.console_admin_password
@@ -99,6 +101,8 @@ resource "packet_device" "ats" {
   user_data        = templatefile("ats-small-userdata.yaml", {
     ansible_repo_org = local.ansible_repo_org,
     ansible_repo_commit = local.ansible_repo_commit,
+    postdeploy_repo_org = local.postdeploy_repo_org,
+    postdeploy_repo_commit = local.postdeploy_repo_commit,
     console_pass_b64 = "%{if local.console_admin_password != ""}${base64encode(local.console_admin_password)}%{ else }${base64encode(random_string.ats_console_password.result)}%{ endif }",
     net_public_ip_cidr = local.public_ip_cidr,
     net_public_ip_range = "${cidrhost(local.public_ip_cidr, 0)}-${cidrhost(local.public_ip_cidr, local.public_ip_count - 1)}",
@@ -111,6 +115,11 @@ output "console_location" {
 }
 
 output "console_password" {
-  description = "The eucalyptus account admin user console password (if generated)"
+  description = "The poc account admin user console password (if generated)"
   value = "%{if local.console_admin_password == ""}${random_string.ats_console_password.result}%{ endif }"
+}
+
+output "ssh_command" {
+  description = "Command to SSH to the ATS head node."
+  value = "ssh root@ssh.ats-${replace(packet_device.ats.network.0.address,".","-")}.euca.me"
 }

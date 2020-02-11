@@ -11,14 +11,25 @@ write_files:
     content: |
       #!/bin/bash
       PLAYBOOK_COMMIT="${ansible_repo_commit}"
+      POSTDEPLOY_COMMIT="${postdeploy_repo_commit}"
       CONSOLE_PASSWORD="$(echo '${console_pass_b64}' | base64 --decode)"
       cd /root
       [ -f ats-deploy.zip ] || wget --quiet --output-document=ats-deploy.zip https://github.com/${ansible_repo_org}/ats-deploy/archive/$${PLAYBOOK_COMMIT}.zip
       [ -d ats-deploy ] || unzip -qq ats-deploy.zip
       [ -d ats-deploy ] || mv ats-deploy-$${PLAYBOOK_COMMIT} ats-deploy
+      [ -f ats-postdeploy.zip ] || wget --quiet --output-document=ats-postdeploy.zip https://github.com/${postdeploy_repo_org}/ats-postdeploy/archive/$${POSTDEPLOY_COMMIT}.zip
+      [ -d ats-postdeploy ] || unzip -qq ats-postdeploy.zip
+      [ -d ats-postdeploy ] || mv ats-postdeploy-$${POSTDEPLOY_COMMIT} ats-postdeploy
+
       ansible-playbook \
-        --extra-vars eucaconsole_admin_password="$${CONSOLE_PASSWORD}" \
         -i inventory.yml ats-deploy/playbook_vpcmido.yml
+
+      yum update -y ansible # need the more recent (EPEL) version for the post-deploy playbook
+
+      ansible-playbook \
+        --extra-vars ats_demo_state=present \
+        --extra-vars eucaconsole_admin_password="$${CONSOLE_PASSWORD}" \
+        -i inventory.yml ats-postdeploy/playbook.yml
   - path: /root/inventory.yml
     owner: "root:root"
     permissions: "644"

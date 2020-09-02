@@ -1,5 +1,14 @@
 # Terraform plan for ats small deployment on packet
 
+terraform {
+  required_version = ">= 0.12.0, < 0.13.0"
+
+  required_providers {
+    packet = "~> 2.7.0"
+    random = "~> 2.2"
+  }
+}
+
 variable "auth_token" {
   type        = string
   default     = null
@@ -70,7 +79,7 @@ locals {
 
 provider "packet" {
   auth_token = local.auth_token
-  version = "~> 2.7"
+  version = "~> 2.7.0"
 }
 
 provider "random" {

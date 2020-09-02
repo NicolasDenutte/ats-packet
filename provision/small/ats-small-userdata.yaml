@@ -1,6 +1,5 @@
 #cloud-config
 packages:
-  - ansible
   - selinux-policy-targeted
   - unzip
   - wget
@@ -21,10 +20,11 @@ write_files:
       [ -d ats-postdeploy ] || unzip -qq ats-postdeploy.zip
       [ -d ats-postdeploy ] || mv ats-postdeploy-$${POSTDEPLOY_COMMIT} ats-postdeploy
 
+      yum install -y epel-release
+      yum install -y ansible
+
       ansible-playbook \
         -i inventory.yml ats-deploy/playbook_vpcmido.yml
-
-      yum update -y ansible # need the more recent (EPEL) version for the post-deploy playbook
 
       ansible-playbook \
         --extra-vars ats_demo_state=present \

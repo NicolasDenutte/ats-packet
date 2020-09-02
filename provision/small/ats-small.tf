@@ -97,7 +97,6 @@ resource "packet_device" "ats" {
   operating_system = "centos_7"
   billing_cycle    = local.billing_cycle
   project_id       = local.project_id
-  ip_address_types = ["private_ipv4", "public_ipv4"]
   user_data        = templatefile("ats-small-userdata.yaml", {
     ansible_repo_org = local.ansible_repo_org,
     ansible_repo_commit = local.ansible_repo_commit,

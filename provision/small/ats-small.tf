@@ -123,6 +123,16 @@ output "console_location" {
   value = "https://console.ats-${replace(packet_device.ats.network.0.address,".","-")}.euca.me/"
 }
 
+output "console_account" {
+  description = "Name of the account created on ATS at installation."
+  value = "poc"
+}
+
+output "console_user" {
+  description = "Name of the administrative user in the account created at installation."
+  value = "admin"
+}
+
 output "console_password" {
   description = "The poc account admin user console password (if generated)"
   value = "%{if local.console_admin_password == ""}${random_string.ats_console_password.result}%{ endif }"

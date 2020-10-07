@@ -1,4 +1,4 @@
-# Terraform plans for AppScale ATS deployments on Packet
+# Terraform plans for AppScale ATS deployments on Equinix Metal™
 
 ## Plans
 
@@ -8,11 +8,11 @@ Plans allow for AppScale ATS deployments with different characteristics:
 
 ## Setup
 
-This Packet and Terraform setup should be completed before provisioning.
+This Equinix Metal™ and Terraform setup should be completed before provisioning.
 
-### Packet Project
+### Equinix Metal™ Project
 
-On Packet create a project and:
+On Equinix Metal™ create a project and:
 
 * note the project id
 * allocate some Elastic IPs for cloud use

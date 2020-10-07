@@ -1,4 +1,4 @@
-# AppScale ATS Packet Public Cloud Integration
+# AppScale ATS - Equinix Metal™ Public Cloud Integration
 
 Support for provisioning AWS compatible AppScale ATS deployments on
-Packet public cloud.
+Equinix Metal™ public cloud.

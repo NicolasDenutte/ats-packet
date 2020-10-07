@@ -1,6 +1,6 @@
-# AppScale ATS small deployment on packet
+# AppScale ATS small deployment on Equinix Metal™
 
-Deploy a small demonstration or testing AppScale ATS cloud on packet.
+Deploy a small demonstration or testing AppScale ATS cloud on Equinix Metal™.
 
 The small deployment consists of:
 
